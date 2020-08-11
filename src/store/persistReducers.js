@@ -11,5 +11,5 @@ export default (reducers) => {
     reducers
   );
 
-  return persistReducer;
+  return persistedReducer;
 };
