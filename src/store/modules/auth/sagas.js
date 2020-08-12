@@ -22,10 +22,13 @@ export function* signIn({ payload }) {
       return;
     }
 
+    api.defaults.headers.Authorization = `Bearer ${token}`;
+
     yield put(signInSuccess(token, user));
 
-    history.pushState('/dashboard');
+    history.push('/dashboard');
   } catch (err) {
+    console.tron.log(err);
     toast.error('Falha na autenticação verifique os seus dados');
     yield put(signFailure());
   }
@@ -43,10 +46,21 @@ export function* signUp({ payload }) {
     });
   } catch (err) {
     toast.error('Falha no cadastro');
+    yield put(signFailure());
   }
 }
 
+function setToken({ payload }) {
+  if (!payload) return;
+
+  const { token } = payload.auth;
+
+  if (token) {
+    api.defaults.headers.Authorization = `Bearer ${token}`;
+  }
+}
 export default all([
+  takeLatest('persist/REHYDRATE', setToken),
   takeLatest('@auth/SIGN_IN_REQUEST', signIn),
   takeLatest('@auth/SIGN_UP_REQUEST', signUp),
 ]);
